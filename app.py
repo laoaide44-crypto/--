@@ -446,7 +446,7 @@ def _start(kind: str) -> None:
 
 
 def _render_schedule_result(result) -> None:
-    """Render stage-1 validation only; no evidence application or versioning."""
+    """Render schedule validation plus explicitly confirmed evidence versions."""
     st.markdown("---")
     st.markdown("### 排班表校验结果")
     status = getattr(result, "status", "待校验")
@@ -530,6 +530,35 @@ def _render_schedule_result(result) -> None:
         st.caption("当前结果可与同门店、同日期、同人员范围、同为‘计划排班、已扣休息’的自报工时比较；实际考勤口径不可直接比较。")
 
 
+    store = st.session_state.setdefault("schedule_evidence_store", fde_schedule.ScheduleEvidenceStore())
+    st.markdown("**证据版本**")
+    st.caption("必须由用户显式确认后才会应用；导入不会自动升级真实性或证据门槛。")
+    if not result.can_apply:
+        st.warning("当前结果只能保存为待处理草稿，不能确认应用。")
+    else:
+        confirm = st.checkbox("我确认采用这份排班结果作为新证据版本", key="schedule_confirm")
+        if st.button("确认应用为新版本", disabled=not confirm, key="schedule_apply"):
+            content = st.session_state.get("schedule_content", "")
+            try:
+                store.apply(content, result, source="未确认", synthetic=bool(st.session_state.get("schedule_synthetic", False)), confirmed=True)
+                st.success("已应用新证据版本")
+            except (PermissionError, ValueError) as exc:
+                st.error(str(exc))
+    current = store.current
+    if current:
+        st.markdown(f"当前版本：**{current.version_id}** · {current.application_status}")
+        st.json(store.page_data())
+        if len(store.versions) > 1:
+            choice = st.selectbox("切换版本（版本内视图）", [v.version_id for v in store.versions], key="schedule_version_choice")
+            if st.button("切换", key="schedule_switch"):
+                store.switch(choice)
+                st.rerun()
+        if st.button("撤回当前版本", key="schedule_undo"):
+            store.undo()
+            st.rerun()
+        st.download_button("导出当前证据版本", data=store.export_text(), file_name="schedule-evidence.json", mime="application/json", key="schedule_export")
+
+
 # ---------------------------------------------------------------- 进场:丢材料
 def render_intake() -> None:
     st.markdown('<div class="step">丢材料 · 越乱越好</div>', unsafe_allow_html=True)
@@ -550,6 +579,8 @@ def render_intake() -> None:
                 if not up.name.lower().endswith(".csv"):
                     st.error("排班表校验仅支持 UTF-8 CSV 文件。")
                 elif st.button("校验排班表", type="primary"):
+                    st.session_state["schedule_content"] = payload
+                    st.session_state["schedule_synthetic"] = up.name.upper().startswith("SYNTHETIC_")
                     st.session_state["schedule_result"] = fde_schedule.parse_schedule_csv(payload)
                     st.rerun()
             else:

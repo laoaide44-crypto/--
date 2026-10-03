@@ -346,3 +346,147 @@ compare_with_self_report = compare_to_self_report
 
 def hours(minutes: int) -> float:
     return _minutes(minutes)
+
+
+# Stage 3: deterministic evidence versions.  This ledger deliberately keeps
+# source, validation, application, and synthetic state independent.
+import copy
+import hashlib
+import json
+
+
+@dataclass
+class ScheduleEvidenceVersion:
+    version_id: str
+    file_hash: str
+    parser_rule_version: str
+    declared_range: dict[str, Any] | None
+    actual_range: dict[str, Any]
+    source: str
+    synthetic: bool
+    material_type: str
+    validation_status: str
+    application_status: str
+    calculation: dict[str, Any]
+    previous_version: str | None = None
+    change_report: list[dict[str, Any]] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+def _calculation_payload(result: ScheduleResult) -> dict[str, Any]:
+    return {
+        "summary_label": result.summary_label,
+        "minutes": result.clean_minutes,
+        "hours": hours(result.clean_minutes),
+        "by_staff_minutes": dict(result.by_staff_minutes),
+        "by_store_minutes": dict(result.by_store_minutes),
+        "conflicts": copy.deepcopy(result.conflicts),
+        "coverage_gaps": list(result.coverage_gaps),
+        "complete": result.complete,
+        "definition": "计划排班、结束时间−开始时间−休息分钟",
+    }
+
+
+def _version_change(before: ScheduleEvidenceVersion | None,
+                    result: ScheduleResult) -> list[dict[str, Any]]:
+    after = _calculation_payload(result)
+    old = before.calculation if before else {}
+    changes: list[dict[str, Any]] = []
+    keys = ["summary_label", "minutes", "hours", "by_staff_minutes", "by_store_minutes",
+            "conflicts", "coverage_gaps", "complete"]
+    for key in keys:
+        if old.get(key) != after.get(key):
+            changes.append({
+                "what": key,
+                "before": old.get(key, "无"),
+                "after": after.get(key),
+                "basis": "文件导入计算结果；来源行/字段见预览中的 source_references",
+                "source": [{"row": r.row_number, "fields": list(r.source_references["fields"])}
+                           for r in result.rows],
+            })
+    return changes
+
+
+class ScheduleEvidenceStore:
+    """In-memory version ledger with explicit confirmation and clean undo."""
+
+    def __init__(self) -> None:
+        self.versions: list[ScheduleEvidenceVersion] = []
+        self.current_version_id: str | None = None
+        self._counter = 0
+
+    @property
+    def current(self) -> ScheduleEvidenceVersion | None:
+        return next((v for v in self.versions if v.version_id == self.current_version_id), None)
+
+    def apply(self, content: str | bytes, result: ScheduleResult, *,
+              declared_range: dict[str, Any] | None = None,
+              source: str | None = None, synthetic: bool = False,
+              material_type: str | None = None, confirmed: bool = False
+              ) -> ScheduleEvidenceVersion:
+        if not confirmed:
+            raise PermissionError("必须由用户显式确认后才能应用证据版本")
+        if not result.can_apply:
+            raise ValueError("存在阻断问题或未解决重叠，不能确认应用；只能保存待处理草稿")
+        raw = content.encode("utf-8") if isinstance(content, str) else bytes(content)
+        self._counter += 1
+        version_id = f"v{self._counter}"
+        prior = self.current
+        actual = copy.deepcopy(result.actual_range)
+        version = ScheduleEvidenceVersion(
+            version_id=version_id,
+            file_hash=hashlib.sha256(raw).hexdigest(),
+            parser_rule_version=RULE_VERSION,
+            declared_range=copy.deepcopy(declared_range if declared_range is not None else result.declared_range),
+            actual_range=actual,
+            source=source or "未确认",
+            synthetic=bool(synthetic),
+            material_type=material_type or ("合成测试材料" if synthetic else "真实业务材料"),
+            validation_status=result.status,
+            application_status="用户已确认应用",
+            calculation=_calculation_payload(result),
+            previous_version=prior.version_id if prior else None,
+            change_report=_version_change(prior, result),
+        )
+        self.versions.append(version)
+        self.current_version_id = version_id
+        return version
+
+    def save_draft(self, result: ScheduleResult) -> dict[str, Any]:
+        return {"application_status": "待确认", "validation_status": result.status,
+                "can_apply": result.can_apply, "calculation": _calculation_payload(result)}
+
+    def switch(self, version_id: str) -> ScheduleEvidenceVersion:
+        version = next(v for v in self.versions if v.version_id == version_id)
+        if version.application_status == "已撤回":
+            raise ValueError("已撤回版本不可切换为当前版本")
+        self.current_version_id = version_id
+        return version
+
+    def undo(self) -> ScheduleEvidenceVersion | None:
+        current = self.current
+        if current is None:
+            return None
+        current.application_status = "已撤回"
+        prior_id = current.previous_version
+        prior = next((v for v in self.versions if v.version_id == prior_id), None)
+        self.current_version_id = prior.version_id if prior else None
+        return prior
+
+    def page_data(self) -> dict[str, Any]:
+        current = self.current
+        return {"current_version": current.to_dict() if current else None,
+                "versions": [v.to_dict() for v in self.versions]}
+
+    def export_text(self) -> str:
+        # Export is serialized from the exact page payload, avoiding a second calculation path.
+        return json.dumps(self.page_data(), ensure_ascii=False, sort_keys=True, indent=2)
+
+
+# Short alias for callers that use the domain term without the schedule prefix.
+EvidenceVersionStore = ScheduleEvidenceStore
+
+def export_schedule_evidence(store: ScheduleEvidenceStore) -> str:
+    return store.export_text()
