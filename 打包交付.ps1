@@ -6,7 +6,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $stamp = Get-Date -Format 'yyyy-MM-dd'
-$name = "xihack-final-submission-$stamp"
+$name = "AI软件赛道 - 交付契约台 - EDG - $stamp"
 $stage = Join-Path $env:TEMP "xihack-final-pkg-$stamp"
 $root = Join-Path $stage $name
 $zip = Join-Path $OutDir "$name.zip"
@@ -15,7 +15,7 @@ New-Item -ItemType Directory -Path (Join-Path $root 'program') -Force | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $root 'docs') -Force | Out-Null
 New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
 $program = Join-Path $root 'program'
-$allowed = @('.py', '.json', '.md', '.cmd', '.ps1', '.toml', '.example')
+$allowed = @('.py', '.json', '.md', '.cmd', '.ps1', '.toml', '.example', '.pptx')
 Get-ChildItem -LiteralPath $CodeDir -File | Where-Object {
     ($allowed -contains $_.Extension) -and ($_.Name -notlike 'app.py.bak*') -and ($_.Name -ne '打包交付.ps1')
 } | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $program -Force }

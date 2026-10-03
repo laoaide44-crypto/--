@@ -43,3 +43,11 @@ desktop.ini
 
 # ---- 本项目原有条目 ----
 契约-草稿.md
+
+# ---- 生成的中间产物 ----
+_submission_stage/
+pitch-preview/
+pitch-beautified-preview/
+pitch-check.json
+pitch-beautified-check.json
+
