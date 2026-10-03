@@ -37,6 +37,17 @@ class ParsedRow:
     duplicate_of: int | None = None
     conflict: bool = False
 
+    @property
+    def net_hours(self) -> float:
+        return _minutes(self.net_minutes)
+
+    @property
+    def source_references(self) -> dict[str, Any]:
+        """Stable provenance for every value used in the row calculation."""
+        return {"row": self.row_number, "fields": [
+            "store_id", "staff_id", "shift_start", "shift_end", "break_minutes"
+        ]}
+
     def key(self) -> tuple[Any, ...]:
         return (self.store_id.strip(), self.staff_id.strip(),
                 self.shift_start.astimezone(timezone.utc).isoformat(),
@@ -60,15 +71,41 @@ class ScheduleResult:
     total_minutes: int = 0
     complete: bool = False
     status: str = "待校验"
+    summary_kind: str = "无"
+    summary_label: str = ""
+    clean_minutes: int = 0
+    duplicate_impact_minutes: int = 0
+    by_staff_minutes: dict[str, int] = field(default_factory=dict)
+    by_store_minutes: dict[str, int] = field(default_factory=dict)
 
     @property
     def can_apply(self) -> bool:
         return not self.errors and not self.conflicts
 
+    def preview_rows(self) -> list[dict[str, Any]]:
+        """Return deterministic, human-auditable row previews.
+
+        Invalid rows are absent because they cannot produce a net duration; valid
+        duplicate rows remain visible and point at their retained source row.
+        """
+        return [{
+            "row": row.row_number,
+            "store_id": row.store_id,
+            "staff_id": row.staff_id,
+            "net_minutes": row.net_minutes,
+            "net_hours": row.net_hours,
+            "source": row.source_references,
+            "duplicate_of": row.duplicate_of,
+            "conflict": row.conflict,
+            "included": row.duplicate_of is None and not row.conflict,
+        } for row in self.rows]
+
     def to_dict(self) -> dict[str, Any]:
         value = asdict(self)
         value["errors"] = [i.to_dict() for i in self.errors]
         value["warnings"] = [i.to_dict() for i in self.warnings]
+        value["preview_rows"] = self.preview_rows()
+        value["complete"] = self.complete
         return value
 
 
@@ -231,16 +268,80 @@ def parse_schedule_csv(content: str | bytes, declared_range: dict[str, Any] | No
                     result.warnings.append(_issue("W2", "warning", left.row_number, "staff_id", f"与第 {right.row_number} 行班次重叠（{minutes} 分钟）", left.staff_id))
     result.rows = raw_rows
     clean = [row for row in active if not row.conflict]
-    result.subtotal_minutes = sum(row.net_minutes for row in clean)
+    result.clean_minutes = sum(row.net_minutes for row in clean)
+    result.subtotal_minutes = result.clean_minutes
     result.total_minutes = sum(row.net_minutes for row in active)
+    result.duplicate_impact_minutes = result.duplicate_minutes
+    result.by_staff_minutes = _group_minutes(clean, "staff_id")
+    result.by_store_minutes = _group_minutes(clean, "store_id")
     dates = sorted({row.shift_start.date().isoformat() for row in active} | {row.shift_end.date().isoformat() for row in active})
-    result.actual_range = {"stores": sorted({row.store_id for row in active}), "dates": dates, "start_date": dates[0] if dates else None, "end_date": dates[-1] if dates else None, "staff_count": len({row.staff_id for row in active}), "shift_count": len(active)}
+    result.actual_range = {"stores": sorted({row.store_id for row in active}), "dates": dates, "start_date": dates[0] if dates else None, "end_date": dates[-1] if dates else None, "staff_ids": sorted({row.staff_id for row in active}), "staff_count": len({row.staff_id for row in active}), "shift_count": len(active)}
     result.coverage_gaps = _range_gaps(declared_range or {}, result.actual_range)
     if result.coverage_gaps:
         result.warnings.append(_issue("W5", "warning", None, None, "文件未覆盖用户声明范围: " + "; ".join(result.coverage_gaps)))
     result.complete = bool(declared_range) and not result.coverage_gaps
+    result.summary_kind = "无异常记录小计" if result.errors or result.conflicts else "文件内已解析记录工时合计"
+    result.summary_label = result.summary_kind
     result.status = "有阻断问题" if result.errors else "结构校验通过"
     return result
+
+
+def _group_minutes(rows: Iterable[ParsedRow], attribute: str) -> dict[str, int]:
+    grouped: dict[str, int] = {}
+    for row in rows:
+        key = str(getattr(row, attribute))
+        grouped[key] = grouped.get(key, 0) + row.net_minutes
+    return dict(sorted(grouped.items()))
+
+
+def compare_to_self_report(result: ScheduleResult, self_report: dict[str, Any]) -> dict[str, Any]:
+    """Compare a parsed plan with a self-report without mutating either history.
+
+    The report uses the same four dimensions as the field specification. Any
+    mismatch makes the result non-comparable and deliberately omits a delta.
+    """
+    report = dict(self_report or {})
+    actual = result.actual_range
+    declared = result.declared_range or {}
+    expected = {
+        "stores": declared.get("stores", actual.get("stores", [])),
+        "start_date": declared.get("start_date", actual.get("start_date")),
+        "end_date": declared.get("end_date", actual.get("end_date")),
+        "staff_ids": declared.get("staff_ids", actual.get("staff_ids", [])),
+        "time_definition": "计划排班、已扣休息",
+    }
+    supplied = {
+        "stores": report.get("stores", report.get("store_ids", [])),
+        "start_date": report.get("start_date"),
+        "end_date": report.get("end_date"),
+        "staff_ids": report.get("staff_ids", []),
+        "time_definition": report.get("time_definition", report.get("kind", "")),
+    }
+    dimensions = {}
+    for key in expected:
+        left, right = expected[key], supplied[key]
+        if key in {"stores", "staff_ids"}:
+            left, right = sorted(set(left or [])), sorted(set(right or []))
+        dimensions[key] = {"match": left == right, "plan": left, "self_report": right}
+    comparable = all(item["match"] for item in dimensions.values())
+    out: dict[str, Any] = {"comparable": comparable, "dimensions": dimensions, "self_report": report}
+    if comparable:
+        report_minutes = report.get("minutes")
+        report_hours = report.get("hours")
+        if report_minutes is None and report_hours is not None:
+            report_minutes = int((Decimal(str(report_hours)) * 60).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+        if report_minutes is not None:
+            out["plan_minutes"] = result.total_minutes if not (result.errors or result.conflicts) else result.subtotal_minutes
+            out["self_report_minutes"] = int(report_minutes)
+            out["difference_minutes"] = out["plan_minutes"] - out["self_report_minutes"]
+            out["difference_hours"] = _minutes(out["difference_minutes"])
+    else:
+        out["message"] = "不可直接比较"
+    return out
+
+
+# Descriptive alias for callers that prefer the domain wording.
+compare_with_self_report = compare_to_self_report
 
 
 def hours(minutes: int) -> float:

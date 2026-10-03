@@ -498,6 +498,37 @@ def _render_schedule_result(result) -> None:
         st.markdown("**未解决重叠冲突（含跨门店）**")
         st.table(conflicts)
 
+    st.markdown("**有效记录预览（净工时与来源回指）**")
+    previews = []
+    for row in result.preview_rows():
+        previews.append({
+            "行号": row["row"], "门店": row["store_id"], "员工": row["staff_id"],
+            "净工时（分钟）": row["net_minutes"], "净工时（小时）": f'{row["net_hours"]:.2f}',
+            "来源回指": f'第 {row["source"]["row"]} 行 · ' + ", ".join(row["source"]["fields"]),
+            "处理": ("完全重复，已去重" if row["duplicate_of"] else
+                    "未解决冲突" if row["conflict"] else "计入汇总"),
+        })
+    if previews:
+        st.table(previews)
+
+    label = getattr(result, "summary_label", "")
+    if label:
+        st.markdown(f"**{label}**")
+        st.metric("汇总工时（小时）", f'{result.clean_minutes / 60:.2f}')
+        st.caption("排班计划 = 结束时间 − 开始时间 − 休息分钟；文件导入 ≠ 真实性已验证；排班计划 ≠ 实际出勤。")
+        if result.by_staff_minutes:
+            st.markdown("**分员工无异常记录小计（小时）**")
+            st.table([{"员工": key, "小时": f"{minutes / 60:.2f}", "来源": "有效记录行"}
+                      for key, minutes in result.by_staff_minutes.items()])
+        if result.by_store_minutes:
+            st.markdown("**分门店无异常记录小计（小时）**")
+            st.table([{"门店": key, "小时": f"{minutes / 60:.2f}", "来源": "有效记录行"}
+                      for key, minutes in result.by_store_minutes.items()])
+        if result.duplicate_count:
+            st.info(f"完全重复已处理：{result.duplicate_count} 行，去重影响 {result.duplicate_impact_minutes / 60:.2f} 小时；保留原始行号映射。")
+        st.markdown("**口径比较**")
+        st.caption("当前结果可与同门店、同日期、同人员范围、同为‘计划排班、已扣休息’的自报工时比较；实际考勤口径不可直接比较。")
+
 
 # ---------------------------------------------------------------- 进场:丢材料
 def render_intake() -> None:
