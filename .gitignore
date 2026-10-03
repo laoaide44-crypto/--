@@ -1,0 +1,45 @@
+# ---- 密钥与凭据：绝对不能提交 ----
+.env
+.env.*
+!.env.example
+!.env.local.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*
+secrets/
+*token*.json
+*serviceaccount*.json
+id_rsa*
+id_ed25519*
+
+# ---- 依赖与构建产物 ----
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.next/
+dist/
+build/
+target/
+
+# ---- 编辑器与系统 ----
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+~$*
+
+# ---- 大文件与归档（走文件镜像，不走 git）----
+*.zip
+*.7z
+*.tar
+*.tar.gz
+*.mp4
+*.mov
+*.mkv
+
+# ---- 本项目原有条目 ----
+契约-草稿.md

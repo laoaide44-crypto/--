@@ -1,0 +1,18 @@
+[theme]
+# ⚠️ 与 app.py 的 :root 是**两个来源**,同名同值;改一个必改另一个。
+# 验证:python check_palette.py --strict
+primaryColor = "#1f4e79"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f3f6f8"
+textColor = "#14181c"
+
+[server]
+headless = true
+fileWatcherType = "auto"
+
+[browser]
+gatherUsageStats = false
+
+# 演示用:去掉右上角的 Deploy 按钮与汉堡菜单(28px 的按钮也不达 44px 触控目标)
+[client]
+toolbarMode = "minimal"

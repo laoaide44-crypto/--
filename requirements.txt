@@ -1,0 +1,5 @@
+# 交付契约台 · 运行依赖
+# 只需要 streamlit(它自带 pandas/numpy 等)。
+# 国内安装建议走清华源:
+#   python -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+streamlit==1.64.0

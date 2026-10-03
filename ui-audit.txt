@@ -1,0 +1,631 @@
+# 界面体检导出(逐屏文字,已去掉重复的侧栏)
+
+--- 侧栏(每屏都在,单独看一次)---
+[sidebar/md] ### 交付契约台
+[sidebar/md] **公开基准库(可核对原文)**
+[sidebar/md] **单票快递产品成本(圆通 2026H1)**  
+1.9 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **单票运输成本(圆通 2026H1)**  
+0.36 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **单票中心操作成本(圆通 2026H1)**  
+0.26 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **单票快递产品收入(圆通 2026H1)**  
+2.17 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **单票毛利(圆通 2026H1)**  
+0.27 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **单票收入(韵达 2026H1)**  
+2.13 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **单票收入(申通 2026H1)**  
+2.24 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **行业平均单票收入(2026H1,全行业)**  
+7.69 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **AI 规模化后单票运输成本降幅(圆通,对 2023H1)**  
+0.11 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **AI 规模化后单票中心操作成本降幅(圆通,对 2023H1)**  
+0.04 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **智能客服可独立闭环的工单占比(中通)**  
+90 %  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **人力成本占收入比降幅(顺丰,同比)**  
+1.4 百分点  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **OEE 世界级基准(制造业参照)**  
+85 %  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **中国工厂实际 OEE 区间**  
+40 %(40–65)  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **来源等级**
+[sidebar/md] - <span class="lvl lvl-PUBLIC">PUBLIC</span> 公开可查,需标出处
+[sidebar/md] - <span class="lvl lvl-INTERVIEW">INTERVIEW</span> 现场访谈才有
+[sidebar/md] - <span class="lvl lvl-INTERNAL">INTERNAL</span> 只有你能给
+[sidebar/md] - <span class="lvl lvl-ASSUMPTION">ASSUMPTION</span> 假设值,说明写在旁边
+[sidebar/cap] FDE · 先把钱算给你看,再问你要信息。
+[sidebar/cap] 基准 14 条 · 测算模型已就绪
+[sidebar/cap] 上市公司财报口径,相对硬;但为 2026 上半年数据,后续会变。
+[sidebar/cap] 上市公司财报口径,相对硬;但为 2026 上半年数据,后续会变。
+[sidebar/cap] 上市公司财报口径,相对硬;但为 2026 上半年数据,后续会变。
+[sidebar/cap] 上市公司财报口径,相对硬;但为 2026 上半年数据,后续会变。
+[sidebar/cap] 同比 +57.11%,受价格修复影响大,波动明显。
+[sidebar/cap] ⚠️ **口径陷阱**:含顺丰/时效件与跨境,与通达系 2.17 元**不是同一个量**,不可互相代入。
+[sidebar/cap] 企业自述口径。厂方未披露统计方法。
+[sidebar/cap] 企业自述口径。
+[sidebar/cap] 企业自述;另有「70% 收件用户诉求」另一口径,不可混用。
+[sidebar/cap] 企业自述;归因为业务结构优化 + 智能化/无人化。
+[sidebar/cap] 来源:TPM/中岛清一,1984。**制造业概念**,此处仅作跨行业参照。
+[sidebar/cap] ⚠️ 该行业**口径不统一**是公开事实(分行业基准 68%–91% 都有),用前必须声明。
+[sidebar/cap] 数据源:圆通速递 2026 年半年度报告(600233.SH)、申通/韵达/中通 2026 半年报(媒体披露口径)、国家邮政局 2026 年上半年行业数据、《关于人工智能+邮政快递的实施意见》· 国家邮政局,2026-04、蒂普泰柯 / LNS Research / Plant Engineering 公开 OEE 统计
+[sidebar/cap] 模型来源:.env.local
+[sidebar/select] label=当前行业 options=['餐饮门店', '快递物流'] value=快递物流
+
+======================================================================
+### ① 开场页(快递物流)
+======================================================================
+[markdown] <style>
+  :root{ --ink:#1c1a18; --ink3:#837c72; --rule:#ddd8cf; --accent:#8c2f24; --paper:#fffefb; }
+  .stApp{ background:#e8e5df; }
+  section.main > div{ max-width:1080px; }
+  .paper{
+    background:var(--paper); border:1px solid var(--rule); border-radius:2px;
+    padding:22px 26px; margin-bottom:16px;
+    box-shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 26px rgba(0,0,0,.06);
+  }
+  .kicker{ font-size:11px; letter-spacing:.2em; color:var(--ink3); text-transform:uppercase; }
+  .big{ font-size:40px; font-weight:800; letter-spacing:-.02em; line-height:1.15; color:var(--accent); }
+  .bigsub{ font-size
+[markdown] <div class="hero"><div class="kicker">XiHack 2026 · AI 软件应用赛道 · 离线可运行</div><h1>一票快递的毛利,只有两毛七。</h1><p class="lead">而在这一票上,成本差一毛五 —— <b>就是半票的毛利</b>。</p><p class="sub">一个给快递网点 / 分拨中心的<b>单票成本诊断台</b>。<b>不用你交任何内部数据</b> —— 只要三个你自己心里有数的数:日均件量、单票综合成本、几个场站。</p></div>
+[markdown] <div class="cred"><div class="cred-t">每个数字都能自己复算</div><div class="cred-d">全部算术摊开,你按计算器就能验</div></div>
+[markdown] <div class="cred"><div class="cred-t">每条依据都标了来源等级</div><div class="cred-d">公开 / 你说的 / 内部数据 / 假设,分得清清楚楚</div></div>
+[markdown] <div class="cred"><div class="cred-t">证据不足就不给承诺</div><div class="cred-d">缺你的内部数据,这份文件就只到「方案设计」</div></div>
+[markdown] **这是一套可复用的交付诊断引擎 —— 当前行业是 `快递物流`。**
+
+**做法**:不先索取内部数据 —— 用公开基准 + 三个不敏感参数先算出钱区间,并摊开全部算术;再把结论写成一份标了证据等级的交付契约。每答一个问题,区间就窄一点。
+
+**完整闭环**:丢材料 → 抽事实(带**回指校验**)→ 只问该问的 → 可自查测算 → 可签字契约 → 沉淀可复用资产。**无需联网也能跑完。**
+
+**可复用的证明**:换一个行业,只换基准库和测算模型,**契约与界面一个字不改** —— 侧栏切一下就能看到两个行业各跑一遍。
+[caption ] 材料可以是:聊天记录、邮件、需求文档、表格导出 —— 乱七八糟的都行。没有材料也能用三个数直接算。
+[ok      ] LLM 已接入 · deepseek-chat
+[button  ] 丢一份材料进来 →
+[button  ] 我只有三个数,直接算 →
+[button  ] ↺ 重新开始
+[select  ] label=当前行业 options=['餐饮门店', '快递物流'] value=快递物流
+[expander] 这个作品在做什么(给评审看的一段话)
+[expander] 单票成本(3)
+[expander] 单票收益(5)
+[expander] AI 降本(4)
+[expander] 跨行业参照(2)
+
+--- 侧栏 ---
+[sidebar/md] ### 交付契约台
+[sidebar/md] **公开基准库(可核对原文)**
+[sidebar/md] **单票快递产品成本(圆通 2026H1)**  
+1.9 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **单票运输成本(圆通 2026H1)**  
+0.36 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **单票中心操作成本(圆通 2026H1)**  
+0.26 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **单票快递产品收入(圆通 2026H1)**  
+2.17 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **单票毛利(圆通 2026H1)**  
+0.27 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **单票收入(韵达 2026H1)**  
+2.13 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **单票收入(申通 2026H1)**  
+2.24 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **行业平均单票收入(2026H1,全行业)**  
+7.69 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **AI 规模化后单票运输成本降幅(圆通,对 2023H1)**  
+0.11 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **AI 规模化后单票中心操作成本降幅(圆通,对 2023H1)**  
+0.04 元/票  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **智能客服可独立闭环的工单占比(中通)**  
+90 %  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **人力成本占收入比降幅(顺丰,同比)**  
+1.4 百分点  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **OEE 世界级基准(制造业参照)**  
+85 %  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **中国工厂实际 OEE 区间**  
+40 %(40–65)  <span class="lvl lvl-PUBLIC">PUBLIC</span>
+[sidebar/md] **来源等级**
+[sidebar/md] - <span class="lvl lvl-PUBLIC">PUBLIC</span> 公开可查,需标出处
+[sidebar/md] - <span class="lvl lvl-INTERVIEW">INTERVIEW</span> 现场访谈才有
+[sidebar/md] - <span class="lvl lvl-INTERNAL">INTERNAL</span> 只有你能给
+[sidebar/md] - <span class="lvl lvl-ASSUMPTION">ASSUMPTION</span> 假设值,说明写在旁边
+[sidebar/cap] FDE · 先把钱算给你看,再问你要信息。
+[sidebar/cap] 基准 14 条 · 测算模型已就绪
+[sidebar/cap] 上市公司财报口径,相对硬;但为 2026 上半年数据,后续会变。
+[sidebar/cap] 上市公司财报口径,相对硬;但为 2026 上半年数据,后续会变。
+[sidebar/cap] 上市公司财报口径,相对硬;但为 2026 上半年数据,后续会变。
+[sidebar/cap] 上市公司财报口径,相对硬;但为 2026 上半年数据,后续会变。
+[sidebar/cap] 同比 +57.11%,受价格修复影响大,波动明显。
+[sidebar/cap] ⚠️ **口径陷阱**:含顺丰/时效件与跨境,与通达系 2.17 元**不是同一个量**,不可互相代入。
+[sidebar/cap] 企业自述口径。厂方未披露统计方法。
+[sidebar/cap] 企业自述口径。
+[sidebar/cap] 企业自述;另有「70% 收件用户诉求」另一口径,不可混用。
+[sidebar/cap] 企业自述;归因为业务结构优化 + 智能化/无人化。
+[sidebar/cap] 来源:TPM/中岛清一,1984。**制造业概念**,此处仅作跨行业参照。
+[sidebar/cap] ⚠️ 该行业**口径不统一**是公开事实(分行业基准 68%–91% 都有),用前必须声明。
+[sidebar/cap] 数据源:圆通速递 2026 年半年度报告(600233.SH)、申通/韵达/中通 2026 半年报(媒体披露口径)、国家邮政局 2026 年上半年行业数据、《关于人工智能+邮政快递的实施意见》· 国家邮政局,2026-04、蒂普泰柯 / LNS Research / Plant Engineering 公开 OEE 统计
+[sidebar/cap] 模型来源:.env.local
+
+======================================================================
+### ② 丢材料页(还没载入材料)
+======================================================================
+[markdown] <style>
+  :root{ --ink:#1c1a18; --ink3:#837c72; --rule:#ddd8cf; --accent:#8c2f24; --paper:#fffefb; }
+  .stApp{ background:#e8e5df; }
+  section.main > div{ max-width:1080px; }
+  .paper{
+    background:var(--paper); border:1px solid var(--rule); border-radius:2px;
+    padding:22px 26px; margin-bottom:16px;
+    box-shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 26px rgba(0,0,0,.06);
+  }
+  .kicker{ font-size:11px; letter-spacing:.2em; color:var(--ink3); text-transform:uppercase; }
+  .big{ font-size:40px; font-weight:800; letter-spacing:-.02em; line-height:1.15; color:var(--accent); }
+  .bigsub{ font-size
+[markdown] <div class="step">丢材料 · 越乱越好</div>
+[markdown] #### 不用说清楚。把原始材料贴进来就行 —— 越乱越好。
+[info    ] 抽取完之后,这里会出现:事实清单、人物、时间线、**互相矛盾的地方**、未知项 ——每一条都带原文出处,而且我会回原文校验一遍。
+[ok      ] LLM 已接入 · deepseek-chat
+[button  ] 抽取事实 →
+[button  ] 返回
+[button  ] ↺ 重新开始
+[radio   ] label=材料从哪来 options=['粘贴文本', '上传文件', '用示例材料', '用预跑结果(离线演示)'] value=粘贴文本
+[select  ] label=当前行业 options=['餐饮门店', '快递物流'] value=快递物流
+[expander] 单票成本(3)
+[expander] 单票收益(5)
+[expander] AI 降本(4)
+[expander] 跨行业参照(2)
+
+======================================================================
+### ② b 丢材料页(选了「用预跑结果」,还没点载入)
+======================================================================
+[markdown] <style>
+  :root{ --ink:#1c1a18; --ink3:#837c72; --rule:#ddd8cf; --accent:#8c2f24; --paper:#fffefb; }
+  .stApp{ background:#e8e5df; }
+  section.main > div{ max-width:1080px; }
+  .paper{
+    background:var(--paper); border:1px solid var(--rule); border-radius:2px;
+    padding:22px 26px; margin-bottom:16px;
+    box-shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 26px rgba(0,0,0,.06);
+  }
+  .kicker{ font-size:11px; letter-spacing:.2em; color:var(--ink3); text-transform:uppercase; }
+  .big{ font-size:40px; font-weight:800; letter-spacing:-.02em; line-height:1.15; color:var(--accent); }
+  .bigsub{ font-size
+[markdown] <div class="step">丢材料 · 越乱越好</div>
+[markdown] #### 不用说清楚。把原始材料贴进来就行 —— 越乱越好。
+[info    ] 这份结果是 **2026-09-22 21:34:16** 在联网环境下**真跑出来的**:含 **7** 条事实,回指校验 15/15 通过。
+
+载入后界面会**明确标注它不是现在现算的** —— 不标注就是造假,标注了就只是「提前跑过一遍」。
+[info    ] 抽取完之后,这里会出现:事实清单、人物、时间线、**互相矛盾的地方**、未知项 ——每一条都带原文出处,而且我会回原文校验一遍。
+[ok      ] LLM 已接入 · deepseek-chat
+[button  ] 载入这份预跑结果 →
+[button  ] 返回
+[button  ] ↺ 重新开始
+[radio   ] label=材料从哪来 options=['粘贴文本', '上传文件', '用示例材料', '用预跑结果(离线演示)'] value=用预跑结果(离线演示)
+[select  ] label=当前行业 options=['餐饮门店', '快递物流'] value=快递物流
+[expander] 单票成本(3)
+[expander] 单票收益(5)
+[expander] AI 降本(4)
+[expander] 跨行业参照(2)
+
+======================================================================
+### ③ 材料已载入(抽取结果 + 只问该问的 + 资产库)
+======================================================================
+[markdown] <style>
+  :root{ --ink:#1c1a18; --ink3:#837c72; --rule:#ddd8cf; --accent:#8c2f24; --paper:#fffefb; }
+  .stApp{ background:#e8e5df; }
+  section.main > div{ max-width:1080px; }
+  .paper{
+    background:var(--paper); border:1px solid var(--rule); border-radius:2px;
+    padding:22px 26px; margin-bottom:16px;
+    box-shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 26px rgba(0,0,0,.06);
+  }
+  .kicker{ font-size:11px; letter-spacing:.2em; color:var(--ink3); text-transform:uppercase; }
+  .big{ font-size:40px; font-weight:800; letter-spacing:-.02em; line-height:1.15; color:var(--accent); }
+  .bigsub{ font-size
+[markdown] <div class="step">丢材料 · 越乱越好</div>
+[markdown] #### 不用说清楚。把原始材料贴进来就行 —— 越乱越好。
+[markdown] ---
+[markdown] <div class="step">抽取结果</div>
+[markdown] ##### 事实清单(每条带出处与等级)
+[markdown] ##### 还不知道的(按来源分好了该去哪拿)
+[markdown] ---
+[markdown] <div class="step">只问该问的</div>
+[markdown] #### 材料已经回答了 1/6 个问题;但有 2 个参数没写清(你的单票综合成本、网点 / 分拨场站数),所以还需要 5 个问题。
+[markdown] **算成本这件事,现在是谁在做?一个月大概花多久?**
+[markdown] ##### 还必须要问的(5 个)
+[markdown] **1. 你们现在说的「单票成本」,里面含了哪些?(派费 / 场地租金 / 车辆折旧 / 中转)**
+
+　　· 为什么必须知道:财报是总部口径,网点口径含不含派费/场地/折旧,直接决定差额大小
+
+　　· 答了会改变什么:口径对不上,后面那个区间就是粗的 —— 对齐前不进承诺
+
+　　· 从哪拿:`问客户`  · **只有当面才能拿到**
+[markdown] **2. 现在有没有在算单票成本?算的话口径是什么?**
+
+　　· 为什么必须知道:契约的验收标准必须能判真假;没有基线就没法立标准
+
+　　· 答了会改变什么:决定契约第 04 条能不能写出来 —— 写不出就没有可验收的承诺
+
+　　· 从哪拿:`问客户`  · **只有当面才能拿到**
+[markdown] **3. 能不能给我们一份脱敏的近 30 天件量与成本数据?**
+
+　　· 为什么必须知道:这是把结论从『方案设计』推到『可承诺』的唯一途径
+
+　　· 答了会改变什么:没有它,契约只能停在「可进入方案设计」—— 我们不给承诺
+
+　　· 从哪拿:`内部数据`  · **只有当面才能拿到**
+[markdown] **4. 如果按这个方向改,谁最不希望?为什么?**
+
+　　· 为什么必须知道:阻力通常不在技术里,而它会决定项目能不能落地
+
+　　· 答了会改变什么:决定契约第 05 条(不压派费)和第 09 条(风险登记)
+
+　　· 从哪拿:`问客户`  · **只有当面才能拿到**
+[markdown] **5. 以前试过什么办法?为什么没成?**
+
+　　· 为什么必须知道:别人踩过的坑,不该再踩一遍
+
+　　· 答了会改变什么:决定契约第 09 条(风险应对)与试点范围
+
+　　· 从哪拿:`问客户`  · 可以顺手问
+[markdown] ---
+[markdown] <div class="step">资产库 · 上一个项目留下的东西</div>
+[markdown] 库里已有 **2** 条资产。根据这份材料的内容,**先拿这 2 条当假设**:
+[markdown] - **[验收范式]** (1 个样本) 用工结构类项目,验收标准可以挂在两个可判定指标上:「人时营业额」与「周均手工修改次数」。两者都能判真假,且都有基线可比。
+[markdown] - **[基准]** (1 个样本) 该场景下实测到的「兼职/小时工占比」约在 17%–23% 区间。⚠️ **单一样本,不可当基准用** —— 只能作为下一次的初始假设。
+[markdown] ---
+[caption ] 依据:「这个月对账又对到现在,我一个人拉了三天表」
+[caption ] 备注:指标本身来自公开基准;组合方式是本次实践的产物
+[caption ] 备注:样本数=1;累积到 3 个以上样本才可当参考区间
+[warn    ] **演示模式** —— 下面这份抽取结果捕捉于 **2026-09-22 21:34:16**(联网环境下跑出的**真实**结果),**不是现在现算的**。
+
+这不是造假:它是真跑出来的,只是不是刚才。要拿实时结果,请在联网环境下重新抽取。
+[warn    ] 但有 2 个参数材料里没写清:你的单票综合成本、网点 / 分拨场站数—— 这几个要在界面上手动填。
+[warn    ] 这些是**待验证的假设,不是事实** —— 它们来自上一个客户。**必须用这份材料重新验一遍**,验不了就不能当依据用。
+[info    ] 这份结果是 **2026-09-22 21:34:16** 在联网环境下**真跑出来的**:含 **7** 条事实,回指校验 15/15 通过。
+
+载入后界面会**明确标注它不是现在现算的** —— 不标注就是造假,标注了就只是「提前跑过一遍」。
+[ok      ] **回指校验:15/15 全部通过** —— 模型给的每一条原句,都能在这份材料里逐字找到。
+[ok      ] LLM 已接入 · deepseek-chat
+[button  ] 载入这份预跑结果 →
+[button  ] 返回
+[button  ] 带着这份材料继续 →
+[button  ] ↺ 重新开始
+[radio   ] label=材料从哪来 options=['粘贴文本', '上传文件', '用示例材料', '用预跑结果(离线演示)'] value=用预跑结果(离线演示)
+[select  ] label=当前行业 options=['餐饮门店', '快递物流'] value=快递物流
+[table   ] rows=7 cols=['类型', '内容', '原文', '等级']
+[table   ] rows=4 cols=['姓名', '材料里的说法', '原句']
+[table   ] rows=3 cols=['时间', '发生了什么', '原句']
+[table   ] rows=4 cols=['还不知道', '为什么必须知道', '从哪拿']
+[expander] 人物(4)
+[expander] 时间线(3)
+[expander] ✅ 材料已经回答了的(1 个)—— 这些不用问
+[expander] 单票成本(3)
+[expander] 单票收益(5)
+[expander] AI 降本(4)
+[expander] 跨行业参照(2)
+
+======================================================================
+### ④ 参数表单
+======================================================================
+[markdown] <style>
+  :root{ --ink:#1c1a18; --ink3:#837c72; --rule:#ddd8cf; --accent:#8c2f24; --paper:#fffefb; }
+  .stApp{ background:#e8e5df; }
+  section.main > div{ max-width:1080px; }
+  .paper{
+    background:var(--paper); border:1px solid var(--rule); border-radius:2px;
+    padding:22px 26px; margin-bottom:16px;
+    box-shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 26px rgba(0,0,0,.06);
+  }
+  .kicker{ font-size:11px; letter-spacing:.2em; color:var(--ink3); text-transform:uppercase; }
+  .big{ font-size:40px; font-weight:800; letter-spacing:-.02em; line-height:1.15; color:var(--accent); }
+  .bigsub{ font-size
+[markdown] <div class="step">三个数 · 你自己心里都有</div>
+[markdown] #### 不需要任何内部数据,不需要给我报表
+[markdown] <div class="step">你可能每年在漏这些钱</div>
+[markdown] <div class="paper"><div class="kicker">按你的年件量折算,与公开参照的年度成本差距</div><div class="big">60.2 万 – 268.3 万元/年</div><div class="bigsub">摊到 8 个场站,平均每个场站每年 **7.5 万 – 33.5 万**。</div><div class="bigsub">这是区间,不是承诺。数字怎么来的,下面每一步你都能自己按计算器重算。</div></div>
+[markdown] ① 你的年件量 = 日均 30,000 票 × 365 天 = **10,950,000 票**
+[markdown] ② 公开参照单票成本 = **1.90 元/票**(圆通 2026H1,通达系口径)
+[markdown] ③ 你的单票成本 2.05 − 参照 1.90 = **0.15 元/票**
+[markdown] ④ 乘上 ①:0.15 × 10,950,000 = **1,642,500 元/年**
+[markdown] ⑤ 区间来自参照值 ±5% 的口径不确定带(自定假设,不是公开数据)
+[markdown] ⑥ 任何一步你都可以自己按计算器重算 —— 出处就在下面,能点开看
+[markdown] 快递一票的毛利只有 **0.27 元**(圆通 2026H1)。你比参照高出的 **0.15 元**,相当于单票毛利的 **56%** —— 在一个薄利行业里,这个量级不是零钱。
+[markdown] **单票快递产品成本(圆通 2026H1)** — 1.9 元/票
+[markdown] **单票运输成本(圆通 2026H1)** — 0.36 元/票
+[markdown] **单票中心操作成本(圆通 2026H1)** — 0.26 元/票
+[markdown] **单票快递产品收入(圆通 2026H1)** — 2.17 元/票
+[markdown] **单票毛利(圆通 2026H1)** — 0.27 元/票
+[markdown] **单票收入(韵达 2026H1)** — 2.13 元/票
+[markdown] **单票收入(申通 2026H1)** — 2.24 元/票
+[markdown] **行业平均单票收入(2026H1,全行业)** — 7.69 元/票
+[markdown] **AI 规模化后单票运输成本降幅(圆通,对 2023H1)** — 0.11 元/票
+[markdown] **AI 规模化后单票中心操作成本降幅(圆通,对 2023H1)** — 0.04 元/票
+[markdown] **智能客服可独立闭环的工单占比(中通)** — 90 %
+[markdown] **人力成本占收入比降幅(顺丰,同比)** — 1.4 百分点
+[markdown] **OEE 世界级基准(制造业参照)** — 85 %
+[markdown] **中国工厂实际 OEE 区间** — 40 %(40–65)
+[markdown] | # | 结论 | 来源等级 | 可信度 |
+|---|---|---|---|
+| E1 | 年件量 = 30,000 × 365 = 10,950,000 票 | `INTERVIEW` | 中 |
+| E2 | 通达系单票成本参照 1.90 元 | `PUBLIC` | 中 |
+| E3 | 单票毛利参照 0.27 元(用作参照系) | `PUBLIC` | 中 |
+| E4 | AI 降本参照 0.15 元/票 | `PUBLIC` | 中低 |
+| E5 | 你的单票综合成本 2.05 元(自报) | `INTERVIEW` | 低—中 |
+| E6 | 参照 ±5% 的不确定带 | `ASSUMPTION` | 低 |
+[markdown] <div class="gate"><b>Gate · 可进入方案设计,不可进入承诺</b><br>E5(你的成本口径)与 E6(不确定带)都还没落定;缺近 30 天原始数据,第 04 条的基线只能靠自报</div>
+[markdown] <div class="step">一次只问一件事</div>
+[markdown] <div class="paper"><div class="kicker">问题 1 / 5</div><b style="font-size:18px">你们现在说的「单票成本」,里面含了哪些?(派费 / 场地租金 / 车辆折旧 / 中转)</b><div class="bigsub">这一项直接决定差额有多大 —— 财报是总部口径,合不合得上全看这一问。 <span class="lvl lvl-INTERVIEW">INTERVIEW</span></div></div>
+[caption ] 单票成本 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票成本 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票成本 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票收益 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票收益 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票收益 · 申通/韵达/中通 2026 半年报(媒体披露口径)
+[caption ] 单票收益 · 申通/韵达/中通 2026 半年报(媒体披露口径)
+[caption ] 单票收益 · 国家邮政局 2026 年上半年行业数据
+[caption ] AI 降本 · 《关于人工智能+邮政快递的实施意见》· 国家邮政局,2026-04
+[caption ] AI 降本 · 《关于人工智能+邮政快递的实施意见》· 国家邮政局,2026-04
+[caption ] AI 降本 · 《关于人工智能+邮政快递的实施意见》· 国家邮政局,2026-04
+[caption ] AI 降本 · 《关于人工智能+邮政快递的实施意见》· 国家邮政局,2026-04
+[caption ] 跨行业参照 · 蒂普泰柯 / LNS Research / Plant Engineering 公开 OEE 统计
+[caption ] 跨行业参照 · 蒂普泰柯 / LNS Research / Plant Engineering 公开 OEE 统计
+[ok      ] LLM 已接入 · deepseek-chat
+[button  ] 算给我看 →
+[button  ] 回答 →
+[button  ] 跳过
+[button  ] ↺ 重新开始
+[select  ] label=当前行业 options=['餐饮门店', '快递物流'] value=快递物流
+[number  ] label=日均件量(票/日) value=30000 help=你自己心里有数的数,不用报表
+[number  ] label=你的单票综合成本(元/票) value=2.05 help=含不含派费都行,但要和你自己平时的口径一致
+[number  ] label=网点 / 分拨场站数(个) value=8 help=用于把年化金额摊到单个场站
+[text    ] label=你的回答 placeholder=一句话就行,不用准确数字
+[expander] 🔍 你自己复算一遍(这是关键)
+[expander] 参照系:为什么这个数不算小
+[expander] 公开基准对照(14 条,都带出处)
+[expander] 证据链与未知项(Gate)
+[expander] 单票成本(3)
+[expander] 单票收益(5)
+[expander] AI 降本(4)
+[expander] 跨行业参照(2)
+
+======================================================================
+### ⑤ 第一屏(钱)+ 追问第 1 问
+======================================================================
+[markdown] <style>
+  :root{ --ink:#1c1a18; --ink3:#837c72; --rule:#ddd8cf; --accent:#8c2f24; --paper:#fffefb; }
+  .stApp{ background:#e8e5df; }
+  section.main > div{ max-width:1080px; }
+  .paper{
+    background:var(--paper); border:1px solid var(--rule); border-radius:2px;
+    padding:22px 26px; margin-bottom:16px;
+    box-shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 26px rgba(0,0,0,.06);
+  }
+  .kicker{ font-size:11px; letter-spacing:.2em; color:var(--ink3); text-transform:uppercase; }
+  .big{ font-size:40px; font-weight:800; letter-spacing:-.02em; line-height:1.15; color:var(--accent); }
+  .bigsub{ font-size
+[markdown] <div class="step">三个数 · 你自己心里都有</div>
+[markdown] #### 不需要任何内部数据,不需要给我报表
+[markdown] <div class="step">你可能每年在漏这些钱</div>
+[markdown] <div class="paper"><div class="kicker">按你的年件量折算,与公开参照的年度成本差距</div><div class="big">60.2 万 – 268.3 万元/年</div><div class="bigsub">摊到 8 个场站,平均每个场站每年 **7.5 万 – 33.5 万**。</div><div class="bigsub">这是区间,不是承诺。数字怎么来的,下面每一步你都能自己按计算器重算。</div></div>
+[markdown] ① 你的年件量 = 日均 30,000 票 × 365 天 = **10,950,000 票**
+[markdown] ② 公开参照单票成本 = **1.90 元/票**(圆通 2026H1,通达系口径)
+[markdown] ③ 你的单票成本 2.05 − 参照 1.90 = **0.15 元/票**
+[markdown] ④ 乘上 ①:0.15 × 10,950,000 = **1,642,500 元/年**
+[markdown] ⑤ 区间来自参照值 ±5% 的口径不确定带(自定假设,不是公开数据)
+[markdown] ⑥ 任何一步你都可以自己按计算器重算 —— 出处就在下面,能点开看
+[markdown] 快递一票的毛利只有 **0.27 元**(圆通 2026H1)。你比参照高出的 **0.15 元**,相当于单票毛利的 **56%** —— 在一个薄利行业里,这个量级不是零钱。
+[markdown] **单票快递产品成本(圆通 2026H1)** — 1.9 元/票
+[markdown] **单票运输成本(圆通 2026H1)** — 0.36 元/票
+[markdown] **单票中心操作成本(圆通 2026H1)** — 0.26 元/票
+[markdown] **单票快递产品收入(圆通 2026H1)** — 2.17 元/票
+[markdown] **单票毛利(圆通 2026H1)** — 0.27 元/票
+[markdown] **单票收入(韵达 2026H1)** — 2.13 元/票
+[markdown] **单票收入(申通 2026H1)** — 2.24 元/票
+[markdown] **行业平均单票收入(2026H1,全行业)** — 7.69 元/票
+[markdown] **AI 规模化后单票运输成本降幅(圆通,对 2023H1)** — 0.11 元/票
+[markdown] **AI 规模化后单票中心操作成本降幅(圆通,对 2023H1)** — 0.04 元/票
+[markdown] **智能客服可独立闭环的工单占比(中通)** — 90 %
+[markdown] **人力成本占收入比降幅(顺丰,同比)** — 1.4 百分点
+[markdown] **OEE 世界级基准(制造业参照)** — 85 %
+[markdown] **中国工厂实际 OEE 区间** — 40 %(40–65)
+[markdown] | # | 结论 | 来源等级 | 可信度 |
+|---|---|---|---|
+| E1 | 年件量 = 30,000 × 365 = 10,950,000 票 | `INTERVIEW` | 中 |
+| E2 | 通达系单票成本参照 1.90 元 | `PUBLIC` | 中 |
+| E3 | 单票毛利参照 0.27 元(用作参照系) | `PUBLIC` | 中 |
+| E4 | AI 降本参照 0.15 元/票 | `PUBLIC` | 中低 |
+| E5 | 你的单票综合成本 2.05 元(自报) | `INTERVIEW` | 低—中 |
+| E6 | 参照 ±5% 的不确定带 | `ASSUMPTION` | 低 |
+[markdown] <div class="gate"><b>Gate · 可进入方案设计,不可进入承诺</b><br>E5(你的成本口径)与 E6(不确定带)都还没落定;缺近 30 天原始数据,第 04 条的基线只能靠自报</div>
+[markdown] <div class="step">一次只问一件事</div>
+[markdown] <div class="paper"><div class="kicker">问题 1 / 5</div><b style="font-size:18px">你们现在说的「单票成本」,里面含了哪些?(派费 / 场地租金 / 车辆折旧 / 中转)</b><div class="bigsub">这一项直接决定差额有多大 —— 财报是总部口径,合不合得上全看这一问。 <span class="lvl lvl-INTERVIEW">INTERVIEW</span></div></div>
+[caption ] 单票成本 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票成本 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票成本 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票收益 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票收益 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票收益 · 申通/韵达/中通 2026 半年报(媒体披露口径)
+[caption ] 单票收益 · 申通/韵达/中通 2026 半年报(媒体披露口径)
+[caption ] 单票收益 · 国家邮政局 2026 年上半年行业数据
+[caption ] AI 降本 · 《关于人工智能+邮政快递的实施意见》· 国家邮政局,2026-04
+[caption ] AI 降本 · 《关于人工智能+邮政快递的实施意见》· 国家邮政局,2026-04
+[caption ] AI 降本 · 《关于人工智能+邮政快递的实施意见》· 国家邮政局,2026-04
+[caption ] AI 降本 · 《关于人工智能+邮政快递的实施意见》· 国家邮政局,2026-04
+[caption ] 跨行业参照 · 蒂普泰柯 / LNS Research / Plant Engineering 公开 OEE 统计
+[caption ] 跨行业参照 · 蒂普泰柯 / LNS Research / Plant Engineering 公开 OEE 统计
+[ok      ] LLM 已接入 · deepseek-chat
+[button  ] 算给我看 →
+[button  ] 回答 →
+[button  ] 跳过
+[button  ] ↺ 重新开始
+[select  ] label=当前行业 options=['餐饮门店', '快递物流'] value=快递物流
+[number  ] label=日均件量(票/日) value=30000 help=你自己心里有数的数,不用报表
+[number  ] label=你的单票综合成本(元/票) value=2.05 help=含不含派费都行,但要和你自己平时的口径一致
+[number  ] label=网点 / 分拨场站数(个) value=8 help=用于把年化金额摊到单个场站
+[text    ] label=你的回答 placeholder=一句话就行,不用准确数字
+[expander] 🔍 你自己复算一遍(这是关键)
+[expander] 参照系:为什么这个数不算小
+[expander] 公开基准对照(14 条,都带出处)
+[expander] 证据链与未知项(Gate)
+[expander] 单票成本(3)
+[expander] 单票收益(5)
+[expander] AI 降本(4)
+[expander] 跨行业参照(2)
+
+======================================================================
+### ⑥ 契约页(答完 5 问)
+======================================================================
+[markdown] <style>
+  :root{ --ink:#1c1a18; --ink3:#837c72; --rule:#ddd8cf; --accent:#8c2f24; --paper:#fffefb; }
+  .stApp{ background:#e8e5df; }
+  section.main > div{ max-width:1080px; }
+  .paper{
+    background:var(--paper); border:1px solid var(--rule); border-radius:2px;
+    padding:22px 26px; margin-bottom:16px;
+    box-shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 26px rgba(0,0,0,.06);
+  }
+  .kicker{ font-size:11px; letter-spacing:.2em; color:var(--ink3); text-transform:uppercase; }
+  .big{ font-size:40px; font-weight:800; letter-spacing:-.02em; line-height:1.15; color:var(--accent); }
+  .bigsub{ font-size
+[markdown] <div class="step">三个数 · 你自己心里都有</div>
+[markdown] #### 不需要任何内部数据,不需要给我报表
+[markdown] <div class="step">你可能每年在漏这些钱</div>
+[markdown] <div class="paper"><div class="kicker">按你的年件量折算,与公开参照的年度成本差距</div><div class="big">60.2 万 – 268.3 万元/年</div><div class="bigsub">摊到 8 个场站,平均每个场站每年 **7.5 万 – 33.5 万**。</div><div class="bigsub">这是区间,不是承诺。数字怎么来的,下面每一步你都能自己按计算器重算。</div></div>
+[markdown] ① 你的年件量 = 日均 30,000 票 × 365 天 = **10,950,000 票**
+[markdown] ② 公开参照单票成本 = **1.90 元/票**(圆通 2026H1,通达系口径)
+[markdown] ③ 你的单票成本 2.05 − 参照 1.90 = **0.15 元/票**
+[markdown] ④ 乘上 ①:0.15 × 10,950,000 = **1,642,500 元/年**
+[markdown] ⑤ 区间来自参照值 ±5% 的口径不确定带(自定假设,不是公开数据)
+[markdown] ⑥ 任何一步你都可以自己按计算器重算 —— 出处就在下面,能点开看
+[markdown] 快递一票的毛利只有 **0.27 元**(圆通 2026H1)。你比参照高出的 **0.15 元**,相当于单票毛利的 **56%** —— 在一个薄利行业里,这个量级不是零钱。
+[markdown] **单票快递产品成本(圆通 2026H1)** — 1.9 元/票
+[markdown] **单票运输成本(圆通 2026H1)** — 0.36 元/票
+[markdown] **单票中心操作成本(圆通 2026H1)** — 0.26 元/票
+[markdown] **单票快递产品收入(圆通 2026H1)** — 2.17 元/票
+[markdown] **单票毛利(圆通 2026H1)** — 0.27 元/票
+[markdown] **单票收入(韵达 2026H1)** — 2.13 元/票
+[markdown] **单票收入(申通 2026H1)** — 2.24 元/票
+[markdown] **行业平均单票收入(2026H1,全行业)** — 7.69 元/票
+[markdown] **AI 规模化后单票运输成本降幅(圆通,对 2023H1)** — 0.11 元/票
+[markdown] **AI 规模化后单票中心操作成本降幅(圆通,对 2023H1)** — 0.04 元/票
+[markdown] **智能客服可独立闭环的工单占比(中通)** — 90 %
+[markdown] **人力成本占收入比降幅(顺丰,同比)** — 1.4 百分点
+[markdown] **OEE 世界级基准(制造业参照)** — 85 %
+[markdown] **中国工厂实际 OEE 区间** — 40 %(40–65)
+[markdown] | # | 结论 | 来源等级 | 可信度 |
+|---|---|---|---|
+| E1 | 年件量 = 30,000 × 365 = 10,950,000 票 | `INTERVIEW` | 中 |
+| E2 | 通达系单票成本参照 1.90 元 | `PUBLIC` | 中 |
+| E3 | 单票毛利参照 0.27 元(用作参照系) | `PUBLIC` | 中 |
+| E4 | AI 降本参照 0.15 元/票 | `PUBLIC` | 中低 |
+| E5 | 你的单票综合成本 2.05 元(自报) | `INTERVIEW` | 低—中 |
+| E6 | 参照 ±5% 的不确定带 | `ASSUMPTION` | 低 |
+[markdown] <div class="gate"><b>Gate · 可进入方案设计,不可进入承诺</b><br>E5(你的成本口径)与 E6(不确定带)都还没落定;缺近 30 天原始数据,第 04 条的基线只能靠自报</div>
+[markdown] <div class="step">契约草稿已生成</div>
+[markdown] <div class="paper"><div class="kicker">给老板看的结论(模型生成)</div><div style="font-size:16px;line-height:1.8">你这边一年差六十点二万到二百六十八点三万。这钱是单票成本二点零五减一点九零，乘上你的一千零九十五万票来的。你们日均三万票里，有多少是发往外省的？</div></div>
+[markdown] # 快递物流 · 交付契约(草稿)
+
+| | |
+|---|---|
+| **行业** | 快递物流 |
+| **甲方** | 〔待填〕 |
+| **乙方** | 〔待填〕 |
+| **版本** | v0.1(草稿,由公开基准自动生成) |
+| **日期** | 〔待填〕 |
+
+> 本契约中每个数字,依据来源等级分为 `PUBLIC`(公开可查)、`INTERVIEW`(现场访谈)、
+> `INTERNAL`(甲方内部数据)、`ASSUMPTION`(自定假设)。
+> **`INTERNAL` 字段为空即为「未提供」,不影响本契约成立,但会收窄结论区间。**
+
+---
+
+## 01 · 问题(甲方原话)
+
+〔未提供 · 待补〕 `INTERVIEW`
+
+*原始输入参数(甲方自报):〔未提供 · 待补〕* `INTERVIEW`
+
+## 02 · 真问题(我们判定实际要解决的是什么)
+
+**真问题不在件量,在单票成本**
+
+按你自己的数算,你的单票综合成本 **2.05 元**,公开参照是 **1.90 元**(通达系口径(圆通 2026H1),总部口径,含运输与中心操作)。差额 **0.15 元/票**,乘上你 **10,950,000 票/年**的年件量,就是下面这个数。
+
+⚠️ **口径待对齐**:财报是总部口径,你的「综合成本」含不含派费/场地/折旧,会直接影响差额 —— *
+[markdown] <div class="gate"><b>下一步(现场用)</b><br>① 把 <code>INTERVIEW</code> 字段用访谈卡补齐(兜里那张 A5);<br>② 向对方索取 <code>INTERNAL</code>:近 30 天件量与成本原始数据 —— <b>拿到才算证据充分</b>;<br>③ 补齐后第 04 条能判真假,这份草稿就可以签字。</div>
+[markdown] ---
+[markdown] <div class="step">把这次学到的东西留下来</div>
+[caption ] 单票成本 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票成本 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票成本 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票收益 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票收益 · 圆通速递 2026 年半年度报告(600233.SH)
+[caption ] 单票收益 · 申通/韵达/中通 2026 半年报(媒体披露口径)
+[caption ] 单票收益 · 申通/韵达/中通 2026 半年报(媒体披露口径)
+[caption ] 单票收益 · 国家邮政局 2026 年上半年行业数据
+[caption ] AI 降本 · 《关于人工智能+邮政快递的实施意见》· 国家邮政局,2026-04
+[caption ] AI 降本 · 《关于人工智能+邮政快递的实施意见》· 国家邮政局,2026-04
+[caption ] AI 降本 · 《关于人工智能+邮政快递的实施意见》· 国家邮政局,2026-04
+[caption ] AI 降本 · 《关于人工智能+邮政快递的实施意见》· 国家邮政局,2026-04
+[caption ] 跨行业参照 · 蒂普泰柯 / LNS Research / Plant Engineering 公开 OEE 统计
+[caption ] 跨行业参照 · 蒂普泰柯 / LNS Research / Plant Engineering 公开 OEE 统计
+[caption ] 资产库现有 2 条。沉淀下来, 下一个客户就不用从头开始 —— 但**留下的是「假设」,不是「事实」**。
+[ok      ] LLM 已接入 · deepseek-chat
+[button  ] 算给我看 →
+[button  ] 把这次的经验沉淀成资产 →
+[button  ] ↺ 重新开始
+[select  ] label=当前行业 options=['餐饮门店', '快递物流'] value=快递物流
+[number  ] label=日均件量(票/日) value=30000 help=你自己心里有数的数,不用报表
+[number  ] label=你的单票综合成本(元/票) value=2.05 help=含不含派费都行,但要和你自己平时的口径一致
+[number  ] label=网点 / 分拨场站数(个) value=8 help=用于把年化金额摊到单个场站
+[expander] 🔍 你自己复算一遍(这是关键)
+[expander] 参照系:为什么这个数不算小
+[expander] 公开基准对照(14 条,都带出处)
+[expander] 证据链与未知项(Gate)
+[expander] 查看契约全文
+[expander] 单票成本(3)
+[expander] 单票收益(5)
+[expander] AI 降本(4)
+[expander] 跨行业参照(2)
+
+--- 换行业:餐饮的开场页 ---
+======================================================================
+### ⑦ 开场页(餐饮)
+======================================================================
+[markdown] <style>
+  :root{ --ink:#1c1a18; --ink3:#837c72; --rule:#ddd8cf; --accent:#8c2f24; --paper:#fffefb; }
+  .stApp{ background:#e8e5df; }
+  section.main > div{ max-width:1080px; }
+  .paper{
+    background:var(--paper); border:1px solid var(--rule); border-radius:2px;
+    padding:22px 26px; margin-bottom:16px;
+    box-shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 26px rgba(0,0,0,.06);
+  }
+  .kicker{ font-size:11px; letter-spacing:.2em; color:var(--ink3); text-transform:uppercase; }
+  .big{ font-size:40px; font-weight:800; letter-spacing:-.02em; line-height:1.15; color:var(--accent); }
+  .bigsub{ font-size
+[markdown] <div class="hero"><div class="kicker">XiHack 2026 · AI 软件应用赛道 · 离线可运行</div><h1>同样一间店,你可能每年多付几十万工资。</h1><p class="lead">而这件事,<b>不用裁掉任何一个人</b>。</p><p class="sub">一个给连锁门店的<b>用工成本诊断台</b>。<b>不用你交任何内部数据</b> —— 只要三个你自己心里有数的数:几家店、每家店月流水多少、雇了多少人。</p></div>
+[markdown] <div class="cred"><div class="cred-t">每个数字都能自己复算</div><div class="cred-d">全部算术摊开,你按计算器就能验</div></div>
+[markdown] <div class="cred"><div class="cred-t">每条依据都标了来源等级</div><div class="cred-d">公开 / 你说的 / 内部数据 / 假设,分得清清楚楚</div></div>
+[markdown] <div class="cred"><div class="cred-t">证据不足就不给承诺</div><div class="cred-d">缺你的内部数据,这份文件就只到「方案设计」</div></div>
+[markdown] **这是一套可复用的交付诊断引擎 —— 当前行业是 `餐饮门店`。**
+
+**做法**:不先索取内部数据 —— 用公开基准 + 三个不敏感参数先算出钱区间,并摊开全部算术;再把结论写成一份标了证据等级的交付契约。每答一个问题,区间就窄一点。
+
+**完整闭环**:丢材料 → 抽事实(带**回指校验**)→ 只问该问的 → 可自查测算 → 可签字契约 → 沉淀可复用资产。**无需联网也能跑完。**
+
+**可复用的证明**:换一个行业,只换基准库和测算模型,**契约与界面一个字不改** —— 侧栏切一下就能看到两个行业各跑一遍。
+[caption ] 材料可以是:聊天记录、邮件、需求文档、表格导出 —— 乱七八糟的都行。没有材料也能用三个数直接算。
+[ok      ] LLM 已接入 · deepseek-chat
+[button  ] 丢一份材料进来 →
+[button  ] 我只有三个数,直接算 →
+[button  ] ↺ 重新开始
+[select  ] label=当前行业 options=['餐饮门店', '快递物流'] value=餐饮门店
+[expander] 这个作品在做什么(给评审看的一段话)
+[expander] 用工结构(3)
+[expander] 用工成本(7)
+[expander] 成本结构(1)
+[expander] 人效(3)
+[expander] 流失与招聘(5)
+[expander] 合规与结构(5)
+
