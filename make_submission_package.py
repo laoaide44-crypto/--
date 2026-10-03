@@ -47,7 +47,7 @@ manifest.write_text('\n'.join([
     'XiHack 2026 final submission package', f'Generated: {date.today().isoformat()}',
     f'File count before manifest: {len(files)}',
     'Primary scenario: fast-delivery logistics. Catering is comparison scenario.',
-    'Demo video: 演示视频/ (raw silent screen recording + aligned voiceover script; replace with final edited MP4 when ready).',
+    'Demo video: 演示视频/AI软件赛道 - 交付契约台 - EDG - 演示视频.mp4 (final edited version, 3:41).',
     '', 'Files:', *[str(p.relative_to(root)) for p in files]
 ]), encoding='utf-8')
 if zip_path.exists(): zip_path.unlink()
