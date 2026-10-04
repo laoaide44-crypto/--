@@ -2,11 +2,15 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 from datetime import date
 import shutil
+import sys
+
+# --no-video: 生成小体积的「邮件版」压缩包(不含 89MB 演示视频,避免超出邮箱附件上限)
+no_video = '--no-video' in sys.argv
 
 base = Path(__file__).parent
 out = base / 'dist'
 out.mkdir(exist_ok=True)
-name = 'AI软件赛道 - 交付契约台 - EDG'
+name = 'AI软件赛道 - 交付契约台 - EDG' + (' - 邮件版' if no_video else '')
 stage = base / '_submission_stage'
 root = stage / name
 zip_path = out / f'{name}.zip'
@@ -15,7 +19,7 @@ if stage.exists(): shutil.rmtree(stage)
 (root / '文档').mkdir(parents=True)
 allowed = {'.py', '.json', '.md', '.cmd', '.ps1', '.toml', '.example', '.pptx'}
 skip = {'打包交付.ps1', 'make_submission_package.py', 'make_pitch.py', 'make_pitch_beautified.py',
-        'pitch-check.json', 'pitch-beautified-check.json',
+        'pitch-check.json', 'pitch-beautified-check.json', '提交邮件草稿.md',
         'AI软件赛道 - 交付契约台 - EDG - 路演PPT.pptx'}
 for p in base.iterdir():
     if p.is_file() and p.suffix in allowed and p.suffix != '.pptx' and not p.name.startswith(('app.py.bak', '~$')) and p.name not in skip:
@@ -23,7 +27,7 @@ for p in base.iterdir():
 # 路演 PPT 与演示视频放在包根目录，方便评委直接找到
 shutil.copy2(base / 'AI软件赛道 - 交付契约台 - EDG - 路演PPT美化版.pptx', root / 'AI软件赛道 - 交付契约台 - EDG - 路演PPT.pptx')
 videos = base / '演示视频'
-if videos.is_dir():
+if videos.is_dir() and not no_video:
     (root / '演示视频').mkdir()
     for p in videos.iterdir():
         if p.is_file() and p.suffix.lower() in {'.mp4', '.webm', '.md'}:
@@ -40,14 +44,17 @@ if cap:
     for p in (cap / 'samples').iterdir():
         if p.name == 'README.md' or p.name.startswith('SYNTHETIC_'): shutil.copy2(p, pack / 'samples' / p.name)
 for p in base.glob('*.md'):
-    if not p.name.endswith('.bak-20261001-物流版'): shutil.copy2(p, root / '文档' / p.name)
+    if p.name not in skip and not p.name.endswith('.bak-20261001-物流版'):
+        shutil.copy2(p, root / '文档' / p.name)
 files = sorted(p for p in root.rglob('*') if p.is_file())
 manifest = root / 'PACKAGE_MANIFEST.txt'
 manifest.write_text('\n'.join([
     'XiHack 2026 final submission package', f'Generated: {date.today().isoformat()}',
     f'File count before manifest: {len(files)}',
     'Primary scenario: fast-delivery logistics. Catering is comparison scenario.',
-    'Demo video: 演示视频/AI软件赛道 - 交付契约台 - EDG - 演示视频.mp4 (final edited version, 3:41).',
+    ('Demo video: NOT included in this email-size package. See GitHub repository link in the covering email.'
+     if no_video else
+     'Demo video: 演示视频/AI软件赛道 - 交付契约台 - EDG - 演示视频.mp4 (final edited version, 3:41).'),
     '', 'Files:', *[str(p.relative_to(root)) for p in files]
 ]), encoding='utf-8')
 if zip_path.exists(): zip_path.unlink()
